@@ -1,0 +1,12 @@
+env/
+venv/
+.idea
+outputs/
+inputs/
+*__pycache__
+.vscode
+pipeline
+*.swp
+output.html
+*.png
+*.pyc
