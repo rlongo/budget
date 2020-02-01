@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 from generator import Generator
+import argparse
 
 from read_inputs import read_tables
 import matplotlib.pyplot as plt
@@ -52,7 +53,14 @@ def plot_category_spend_monthly(data, ax, category):
         ax.text(rect.get_x() + rect.get_width() / 2, height + 5, label, ha='center', va='bottom')
 
 def main():
-    data = read_tables('inputs')
+    parser = argparse.ArgumentParser(description='A budget tracking and monitoring tool')
+    parser.add_argument('-i', dest='input_dir', metavar='input_dir', type=str,
+            default='inputs', help='input directory containing budgeting csv files')
+    args = parser.parse_args()
+    input_dir = args.input_dir[0]
+
+    print("Processing inputs in %s" % args.input_dir)
+    data = read_tables(args.input_dir)
     
     # Show all Pandas floats as $ from here on out. If we don't want
     # this, have to do it per column (which is a little annoying)
@@ -63,6 +71,7 @@ def main():
     debts = get_category_spend(data, 'debt')
     capex = get_category_spend_monthly(data, 'capex', True)
     monthly_expenses = get_category_spend_monthly(data, 'living', True)
+    monthly_spend = get_category_spend_monthly(data, 'purchases', True)
 
     fig1, ax1 = plt.subplots()
     plot_cash_streams(cash_streams.drop(grand_total_label, axis=0), ax1)
@@ -81,6 +90,7 @@ def main():
     g.add_section_dataframe(section_label, 'Total Payments Towards Debts', debts) 
     g.add_section_dataframe(section_label, 'Total Capex', capex) 
     g.add_section_dataframe(section_label, 'Monthly Expenses', monthly_expenses) 
+    g.add_section_dataframe(section_label, 'Monthly Spend', monthly_spend) 
 
     g.generate('output.html')
 
